@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Question Answering AI</title>
+</head>
+<body>
+  <h1>Question Answering AI</h1>
+  <p>Ask me a question:</p>
+  <input type="text" id="question">
+  <button onclick="askQuestion()">Ask</button>
+  <p id="answer"></p>
+  
+  <script src="https://cdn.jsdelivr.net/npm/isomorphic-fetch@3.0.0/fetch-npm-node.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dropbox@10.0.0/dist/Dropbox-sdk.min.js"></script>
+  <script>
+    async function askQuestion() {
+      // Get the question from the input field
+      var question = document.getElementById('question').value;
+      
+      // Check if the AI has an answer for the question
+      if (answers[question]) {
+        // If the AI has an answer, display it
+        document.getElementById('answer').innerHTML = answers[question];
+      } else {
+        // If the AI doesn't have an answer, prompt the user for an answer
+        var userAnswer = prompt("I'm sorry, I don't have an answer for that question. Please provide an answer:");
+        
+        // Save the user's answer to a file in Dropbox
+        await saveResponse(userAnswer);
+        
+        // Save the user's answer in the answers dictionary for future reference
+        answers[question] = userAnswer;
+        
+        // Display the user's answer
+        document.getElementById('answer').innerHTML = userAnswer;
+      }
+    }
+    
+    async function saveResponse(response) {
+      // Create a Dropbox client
+      const dbx = new Dropbox({
+        accessToken: 'sl.BVw0sufhsEgjmdF9IYNFuP1_2e7JZPfpoA2nsC968UAJXowgqWZbkB8eHiE77pKmEFl6O3JbhMJna-aMoSdHgj9nIi7Df8TeJpTdZh6RD-e2D0n1Pflc7gmngDRsn3Pos2FUGw_9JKYW',
+      });
+      
+      // Save the response to a file in Dropbox
+      await dbx.filesUpload({
+        path: '/responses/response.txt',
+        contents: response,
+      });
+    }
+    
+    // A dictionary to store the AI's answers to questions
+    var answers = {
+      "What is your name?": "My name is AI.",
+      "What is the capital of France?": "The capital of France is Paris."
+    };
+  </script>
+</body>
+</html>
